@@ -9,5 +9,7 @@ public interface Service<T> {
 
     int delete(T t);
 
+    List<T> search(String condition);
+
     List<T> selectAll();
 }

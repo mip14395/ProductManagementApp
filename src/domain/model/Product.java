@@ -2,10 +2,13 @@ package domain.model;
 
 import java.io.Serializable;
 
-public abstract class Product implements Serializable {
+public abstract class Product extends Publisher implements Serializable {
     private String iD, name;
     private int amount;
     private int price;
+
+    public Product() {
+    }
 
     public Product(String iD, String name, int amount, int price) {
         this.iD = iD;
@@ -16,10 +19,12 @@ public abstract class Product implements Serializable {
 
     public void setAmount(int amount) {
         this.amount = amount;
+        notifySubscribers();
     }
 
     public void setPrice(int price) {
         this.price = price;
+        notifySubscribers();
     }
 
     public String getID() {
@@ -40,5 +45,5 @@ public abstract class Product implements Serializable {
 
     public abstract int calVAT();
 
-    public abstract String grade();
+    public abstract String saleGrading();
 }

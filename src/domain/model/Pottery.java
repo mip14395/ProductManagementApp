@@ -1,6 +1,7 @@
 package domain.model;
 
 import java.sql.Date;
+import java.util.concurrent.TimeUnit;
 
 public class Pottery extends Product {
 
@@ -31,9 +32,15 @@ public class Pottery extends Product {
     }
 
     @Override
-    public String grade() {
-        String grade = new String();
-        return grade;
+    public String saleGrading() {
+        long milisDay = TimeUnit.DAYS.toMillis(1);
+        // chỉ còn 10 trong kho trong vòng 90 ngày thì là hàng bán chạy
+        if (milisDay * 90 > System.currentTimeMillis() - getImportDate().getTime() && getAmount() <= 10)
+            return "Best-Seller";
+        // Sau 1 năm, trong kho vẫn còn 15 thì là hàng khó bán
+        if (milisDay * 365 <= System.currentTimeMillis() - getImportDate().getTime() && getAmount() >= 15)
+            return "Obsolete";
+        return "Average";
     }
 
 }

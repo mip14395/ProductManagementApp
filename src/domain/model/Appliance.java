@@ -25,8 +25,13 @@ public class Appliance extends Product {
     }
 
     @Override
-    public String grade() {
-        String grade = new String();
-        return grade;
+    public String saleGrading() {
+        // Còn 20 trở lên trong kho => khó bán
+        if (getAmount() >= 20)
+            return "Obsolete";
+        // Còn 5 trở xuống => Best-Seller
+        if (getAmount() <= 5)
+            return "Best-Seller";
+        return "Average";
     }
 }
