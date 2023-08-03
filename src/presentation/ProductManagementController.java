@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
+import domain.*;
 import domain.model.Product;
 
 public class ProductManagementController implements ActionListener {

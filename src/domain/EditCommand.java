@@ -1,4 +1,4 @@
-package presentation;
+package domain;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -16,11 +16,11 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.text.MaskFormatter;
 
-import domain.*;
 import domain.model.*;
 import persistence.ApplianceJdbcGateway;
 import persistence.FoodJdbcGateway;
 import persistence.PotteryJdbcGateway;
+import presentation.Subscriber;
 
 public class EditCommand implements Command {
     private Product modelRemote;

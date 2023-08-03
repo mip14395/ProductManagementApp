@@ -1,4 +1,4 @@
-package presentation;
+package domain;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -19,7 +19,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.text.MaskFormatter;
 
-import domain.ProductServiceImpl;
 import domain.model.Appliance;
 import domain.model.Food;
 import domain.model.Pottery;
@@ -27,6 +26,8 @@ import domain.model.Product;
 import persistence.ApplianceJdbcGateway;
 import persistence.FoodJdbcGateway;
 import persistence.PotteryJdbcGateway;
+import presentation.ProductManagementUI;
+import presentation.Subscriber;
 
 public class AddCommand implements Command {
 

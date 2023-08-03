@@ -1,7 +1,8 @@
-package presentation;
+package domain;
 
 import javax.swing.JOptionPane;
 import domain.model.Product;
+import presentation.ProductManagementUI;
 
 public class SearchCommand implements Command {
     private Product modelRemote;

@@ -1,9 +1,10 @@
-package presentation;
+package domain;
 
 import java.sql.Date;
 import java.util.concurrent.TimeUnit;
 
 import domain.model.Product;
+import presentation.ProductManagementUI;
 
 public class CloseToExpirationCommand implements Command {
     private Product modelRemote;

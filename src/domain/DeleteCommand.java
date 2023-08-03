@@ -1,8 +1,7 @@
-package presentation;
+package domain;
 
 import javax.swing.JOptionPane;
 
-import domain.*;
 import domain.model.*;
 import persistence.PotteryJdbcGateway;
 

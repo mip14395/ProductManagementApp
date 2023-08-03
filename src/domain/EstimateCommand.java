@@ -1,4 +1,4 @@
-package presentation;
+package domain;
 
 import java.awt.GridLayout;
 import java.util.List;
@@ -8,7 +8,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import domain.ProductServiceImpl;
 import domain.model.Product;
 
 public class EstimateCommand implements Command {
