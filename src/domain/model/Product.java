@@ -19,12 +19,10 @@ public abstract class Product extends Publisher implements Serializable {
 
     public void setAmount(int amount) {
         this.amount = amount;
-        notifySubscribers();
     }
 
     public void setPrice(int price) {
         this.price = price;
-        notifySubscribers();
     }
 
     public String getID() {

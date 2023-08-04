@@ -45,7 +45,7 @@ public class AddCommand implements Command {
         if (modelRemote == null) {
             return;
         } else if (modelRemote.getID() != null && modelRemote.getName() != null) {
-            String iD = modelRemote.getID().stripTrailing();
+            String iD = modelRemote.getID().replaceAll(" ", "");
             String name = modelRemote.getName().trim();
             if (iD.isEmpty() || name.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Please enter ID and Name",
