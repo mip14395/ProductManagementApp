@@ -45,7 +45,7 @@ public class AddCommand implements Command {
         if (modelRemote == null) {
             return;
         } else if (modelRemote.getID() != null && modelRemote.getName() != null) {
-            String iD = modelRemote.getID().replaceAll(" ", "");
+            String iD = modelRemote.getID().replaceAll("\\s", "");
             String name = modelRemote.getName().trim();
             if (iD.isEmpty() || name.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Please enter ID and Name",
@@ -99,206 +99,217 @@ public class AddCommand implements Command {
             });
             infoFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             infoFrame.setResizable(false);
+            ActionListener actionListener = new ActionListener() {
 
-            applianceButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     frame.dispose();
-                    JLabel wLabel = new JLabel("- Warranty months:");
-                    JTextField wTextField = new JTextField();
-                    JLabel cLabel = new JLabel("- Capacity:");
-                    JTextField cTextField = new JTextField();
                     infoPanel.setLayout(new GridLayout(7, 2));
-                    infoPanel.add(wLabel);
-                    infoPanel.add(wTextField);
-                    infoPanel.add(cLabel);
-                    infoPanel.add(cTextField);
+                    if (e.getSource() == applianceButton) {
+                        JLabel wLabel = new JLabel("- Warranty months:");
+                        JTextField wTextField = new JTextField();
+                        JLabel cLabel = new JLabel("- Capacity:");
+                        JTextField cTextField = new JTextField();
+                        infoPanel.add(wLabel);
+                        infoPanel.add(wTextField);
+                        infoPanel.add(cLabel);
+                        infoPanel.add(cTextField);
+                        aButton.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                int warrantyMonth = 0;
+                                double capacity = 0;
+                                try {
+                                    try {
+                                        warrantyMonth = Integer.parseInt(wTextField.getText());
+                                    } catch (NumberFormatException ex) {
+                                        JOptionPane.showMessageDialog(infoFrame,
+                                                "Warranty Months can only be an integer",
+                                                "INVALID INPUT(s)",
+                                                JOptionPane.ERROR_MESSAGE);
+                                        return;
+                                    }
+                                    try {
+                                        capacity = Double.parseDouble(cTextField.getText());
+                                    } catch (NumberFormatException ex) {
+                                        JOptionPane.showMessageDialog(infoFrame, "Capacity can only be a double",
+                                                "INVALID INPUT(s)",
+                                                JOptionPane.ERROR_MESSAGE);
+                                        return;
+                                    }
+                                    if (warrantyMonth < 0 || capacity < 0) {
+                                        JOptionPane.showMessageDialog(infoFrame,
+                                                "Warranty months and Capacity cannot be negatives",
+                                                "INVALID INPUT(s)",
+                                                JOptionPane.ERROR_MESSAGE);
+                                        return;
+                                    }
+                                } catch (NullPointerException ex) {
+                                    JOptionPane.showMessageDialog(infoFrame, "Please enter all of the informations",
+                                            "INVALID INPUT(s)",
+                                            JOptionPane.ERROR_MESSAGE);
+                                    infoFrame.dispose();
+                                    return;
+                                }
+                                Appliance appliance = new Appliance(iD, name, amount, price, warrantyMonth, capacity);
+                                for (Subscriber subscriber : modelRemote.getSubscribers()) {
+                                    appliance.addSubscriber(subscriber);
+                                    ((ProductManagementUI) subscriber).clearInputFields();
+                                }
+                                ProductServiceImpl applianceService = new ProductServiceImpl(
+                                        new ApplianceJdbcGateway());
+                                JOptionPane.showMessageDialog(infoFrame,
+                                        "Added " + applianceService.insert(appliance)
+                                                + " Appliance product into database",
+                                        "Done!",
+                                        JOptionPane.INFORMATION_MESSAGE);
+                                infoFrame.dispose();
+                            }
+                        });
+                    } else if (e.getSource() == potteryButton) {
+                        JLabel sLabel = new JLabel("- Supplier:");
+                        JTextField sTextField = new JTextField();
+                        JLabel impLabel = new JLabel("- Import Date:");
+                        MaskFormatter formatter = new MaskFormatter();
+                        try {
+                            formatter = new MaskFormatter("####-##-##");
+                        } catch (ParseException e1) {
+                        }
+                        formatter.setOverwriteMode(true);
+                        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                        formatter.setPlaceholder(format.format(new Date(System.currentTimeMillis())));
+                        JFormattedTextField impTextField = new JFormattedTextField(formatter);
+                        infoPanel.setLayout(new GridLayout(7, 2));
+                        infoPanel.add(sLabel);
+                        infoPanel.add(sTextField);
+                        infoPanel.add(impLabel);
+                        infoPanel.add(impTextField);
+                        aButton.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                String supplier = sTextField.getText();
+                                Date importDate = null;
+                                try {
+                                    importDate = Date.valueOf(impTextField.getText());
+                                    if (importDate.after(new Date(System.currentTimeMillis()))) {
+                                        JOptionPane.showMessageDialog(infoPanel,
+                                                "Import date cannot be in the future!", "Invalid input",
+                                                JOptionPane.WARNING_MESSAGE);
+                                        return;
+                                    }
+                                } catch (IllegalArgumentException ex) {
+                                    JOptionPane.showMessageDialog(infoPanel,
+                                            "Please enter dates under the format (yyyy-MM-dd)!", "Invalid input",
+                                            JOptionPane.WARNING_MESSAGE);
+                                    return;
+                                }
+                                if (supplier.isEmpty()) {
+                                    JOptionPane.showMessageDialog(infoPanel, "Please enter suplier!", "Invalid input",
+                                            JOptionPane.WARNING_MESSAGE);
+                                    return;
+                                }
+                                Pottery pottery = new Pottery(iD, name, amount, price, importDate, supplier);
+                                for (Subscriber subscriber : modelRemote.getSubscribers()) {
+                                    pottery.addSubscriber(subscriber);
+                                    ((ProductManagementUI) subscriber).clearInputFields();
+                                }
+                                ProductServiceImpl potteryService = new ProductServiceImpl(new PotteryJdbcGateway());
+                                JOptionPane.showMessageDialog(infoFrame,
+                                        "Added " + potteryService.insert(pottery) + " Pottery product into database.",
+                                        "Done!",
+                                        JOptionPane.INFORMATION_MESSAGE);
+                                infoFrame.dispose();
+                            }
+                        });
+                    } else {
+                        infoPanel.setLayout(new GridLayout(8, 2));
+                        JLabel sLabel = new JLabel("- Supplier:");
+                        JTextField sTextField = new JTextField();
+                        JLabel mFGLabel = new JLabel("- MFG:");
+                        JLabel eXPLabel = new JLabel("- EXP");
+                        MaskFormatter formatter = new MaskFormatter();
+                        MaskFormatter formatter2 = new MaskFormatter();
+                        try {
+                            formatter = new MaskFormatter("####-##-##");
+                            formatter2 = new MaskFormatter("####-##-##");
+                        } catch (ParseException e1) {
+                        }
+                        formatter.setAllowsInvalid(false);
+                        formatter.setOverwriteMode(true);
+                        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                        formatter.setPlaceholder(
+                                format.format(new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1) * 7)));
+                        JFormattedTextField mFGTextField = new JFormattedTextField(formatter);
+                        formatter2.setPlaceholder(
+                                format.format(new Date(System.currentTimeMillis() + +TimeUnit.DAYS.toMillis(1) * 30)));
+                        JFormattedTextField eXPTextField = new JFormattedTextField(formatter2);
+                        infoPanel.setLayout(new GridLayout(8, 2));
+                        infoPanel.add(sLabel);
+                        infoPanel.add(sTextField);
+                        infoPanel.add(mFGLabel);
+                        infoPanel.add(mFGTextField);
+                        infoPanel.add(eXPLabel);
+                        infoPanel.add(eXPTextField);
+                        aButton.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                String supplier = sTextField.getText();
+                                Date mFG = null;
+                                Date eXP = null;
+                                try {
+                                    mFG = Date.valueOf(mFGTextField.getText());
+                                    eXP = Date.valueOf(eXPTextField.getText());
+                                    if (mFG.after(new Date(System.currentTimeMillis()))) {
+                                        JOptionPane.showMessageDialog(infoPanel,
+                                                "Manufacturing date cannot be in the future!", "Invalid input",
+                                                JOptionPane.WARNING_MESSAGE);
+                                        return;
+                                    }
+                                    if (mFG.compareTo(eXP) > 0) {
+                                        JOptionPane.showMessageDialog(infoPanel,
+                                                "Manufacturing date cannot be later than Expiration date!",
+                                                "Invalid input",
+                                                JOptionPane.WARNING_MESSAGE);
+                                        return;
+                                    }
+                                } catch (IllegalArgumentException ex) {
+                                    JOptionPane.showMessageDialog(infoPanel,
+                                            "Please enter dates under the format (yyyy-MM-dd)!", "Invalid input",
+                                            JOptionPane.WARNING_MESSAGE);
+                                    return;
+                                }
+                                if (supplier.isEmpty()) {
+                                    JOptionPane.showMessageDialog(infoPanel, "Please enter suplier!", "Invalid input",
+                                            JOptionPane.WARNING_MESSAGE);
+                                    return;
+                                }
+                                Food food = new Food(iD, name, amount, price, mFG, eXP, supplier);
+                                for (Subscriber subscriber : modelRemote.getSubscribers()) {
+                                    food.addSubscriber(subscriber);
+                                    ((ProductManagementUI) subscriber).clearInputFields();
+                                }
+                                ProductServiceImpl foodService = new ProductServiceImpl(new FoodJdbcGateway());
+                                JOptionPane.showMessageDialog(infoFrame,
+                                        "Added " + foodService.insert(food) + " Food product into database.",
+                                        "Done!",
+                                        JOptionPane.INFORMATION_MESSAGE);
+                                infoFrame.dispose();
+                            }
+                        });
+                    }
                     infoPanel.add(cButton);
                     infoPanel.add(aButton);
                     infoFrame.add(infoHeader);
                     infoFrame.add(infoPanel);
                     infoFrame.setSize(new Dimension(600, 300));
                     infoFrame.setVisible(true);
-                    aButton.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            int warrantyMonth = 0;
-                            double capacity = 0;
-                            try {
-                                try {
-                                    warrantyMonth = Integer.parseInt(wTextField.getText());
-                                } catch (NumberFormatException ex) {
-                                    JOptionPane.showMessageDialog(infoFrame, "Warranty Months can only be an integer",
-                                            "INVALID INPUT(s)",
-                                            JOptionPane.ERROR_MESSAGE);
-                                    infoFrame.dispose();
-                                    return;
-                                }
-                                try {
-                                    capacity = Double.parseDouble(cTextField.getText());
-                                } catch (NumberFormatException ex) {
-                                    JOptionPane.showMessageDialog(infoFrame, "Capacity can only be a double",
-                                            "INVALID INPUT(s)",
-                                            JOptionPane.ERROR_MESSAGE);
-                                    infoFrame.dispose();
-                                    return;
-                                }
-                            } catch (NullPointerException ex) {
-                                JOptionPane.showMessageDialog(infoFrame, "Please enter all of the informations",
-                                        "INVALID INPUT(s)",
-                                        JOptionPane.ERROR_MESSAGE);
-                                infoFrame.dispose();
-                                return;
-                            }
-                            Appliance appliance = new Appliance(iD, name, amount, price, warrantyMonth, capacity);
-                            for (Subscriber subscriber : modelRemote.getSubscribers()) {
-                                appliance.addSubscriber(subscriber);
-                                ((ProductManagementUI) subscriber).clearInputFields();
-                            }
-                            ProductServiceImpl applianceService = new ProductServiceImpl(new ApplianceJdbcGateway());
-                            JOptionPane.showMessageDialog(infoFrame,
-                                    "Added " + applianceService.insert(appliance) + " Appliance product into database",
-                                    "Done!",
-                                    JOptionPane.INFORMATION_MESSAGE);
-                            infoFrame.dispose();
-                        }
-                    });
                 }
-            });
 
-            potteryButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    frame.dispose();
-                    JLabel sLabel = new JLabel("- Supplier:");
-                    JTextField sTextField = new JTextField();
-                    JLabel impLabel = new JLabel("- Import Date:");
-                    MaskFormatter formatter = new MaskFormatter();
-                    try {
-                        formatter = new MaskFormatter("####-##-##");
-                    } catch (ParseException e1) {
-                    }
-                    formatter.setAllowsInvalid(false);
-                    formatter.setOverwriteMode(true);
-                    DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-                    formatter.setPlaceholder(format.format(new Date(System.currentTimeMillis())));
-                    JFormattedTextField impTextField = new JFormattedTextField(formatter);
-                    impTextField.setColumns(8);
-                    infoPanel.setLayout(new GridLayout(7, 2));
-                    infoPanel.add(sLabel);
-                    infoPanel.add(sTextField);
-                    infoPanel.add(impLabel);
-                    infoPanel.add(impTextField);
-                    infoPanel.add(cButton);
-                    infoPanel.add(aButton);
-                    infoFrame.add(infoPanel);
-                    infoFrame.setSize(new Dimension(600, 300));
-                    infoFrame.setVisible(true);
+            };
 
-                    aButton.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            String supplier = sTextField.getText();
-                            Date importDate = null;
-                            try {
-                                importDate = Date.valueOf(impTextField.getText());
-                            } catch (IllegalArgumentException ex) {
-                                JOptionPane.showMessageDialog(infoPanel,
-                                        "Please enter dates under the format (yyyy-MM-dd)!", "Invalid input",
-                                        JOptionPane.WARNING_MESSAGE);
-                                return;
-                            }
-                            if (supplier.isEmpty()) {
-                                JOptionPane.showMessageDialog(infoPanel, "Please enter suplier!", "Invalid input",
-                                        JOptionPane.WARNING_MESSAGE);
-                            }
-                            Pottery pottery = new Pottery(iD, name, amount, price, importDate, supplier);
-                            for (Subscriber subscriber : modelRemote.getSubscribers()) {
-                                pottery.addSubscriber(subscriber);
-                                ((ProductManagementUI) subscriber).clearInputFields();
-                            }
-                            ProductServiceImpl potteryService = new ProductServiceImpl(new PotteryJdbcGateway());
-                            JOptionPane.showMessageDialog(infoFrame,
-                                    "Added " + potteryService.insert(pottery) + " Pottery product into database.",
-                                    "Done!",
-                                    JOptionPane.INFORMATION_MESSAGE);
-                            infoFrame.dispose();
-                        }
-                    });
-                }
-            });
-
-            foodButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    frame.dispose();
-                    JLabel sLabel = new JLabel("- Supplier:");
-                    JTextField sTextField = new JTextField();
-                    JLabel mFGLabel = new JLabel("- MFG:");
-                    JLabel eXPLabel = new JLabel("- EXP");
-                    MaskFormatter formatter = new MaskFormatter();
-                    MaskFormatter formatter2 = new MaskFormatter();
-                    try {
-                        formatter = new MaskFormatter("####-##-##");
-                        formatter2 = new MaskFormatter("####-##-##");
-                    } catch (ParseException e1) {
-                    }
-                    formatter.setAllowsInvalid(false);
-                    formatter.setOverwriteMode(true);
-                    DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-                    formatter.setPlaceholder(
-                            format.format(new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1) * 7)));
-                    JFormattedTextField mFGTextField = new JFormattedTextField(formatter);
-                    formatter2.setPlaceholder(
-                            format.format(new Date(System.currentTimeMillis() + +TimeUnit.DAYS.toMillis(1) * 30)));
-                    JFormattedTextField eXPTextField = new JFormattedTextField(formatter2);
-                    mFGTextField.setColumns(8);
-                    eXPTextField.setColumns(8);
-                    infoPanel.setLayout(new GridLayout(8, 2));
-                    infoPanel.add(sLabel);
-                    infoPanel.add(sTextField);
-                    infoPanel.add(mFGLabel);
-                    infoPanel.add(mFGTextField);
-                    infoPanel.add(eXPLabel);
-                    infoPanel.add(eXPTextField);
-                    infoPanel.add(cButton);
-                    infoPanel.add(aButton);
-                    infoFrame.add(infoPanel);
-                    infoFrame.setSize(new Dimension(600, 300));
-                    infoFrame.setVisible(true);
-                    aButton.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            String supplier = sTextField.getText();
-                            Date mFG = null;
-                            Date eXP = null;
-                            try {
-                                mFG = Date.valueOf(mFGTextField.getText());
-                                eXP = Date.valueOf(eXPTextField.getText());
-                            } catch (IllegalArgumentException ex) {
-                                JOptionPane.showMessageDialog(infoPanel,
-                                        "Please enter dates under the format (yyyy-MM-dd)!", "Invalid input",
-                                        JOptionPane.WARNING_MESSAGE);
-                                return;
-                            }
-                            if (supplier.isEmpty()) {
-
-                            }
-                            Food food = new Food(iD, name, amount, price, mFG, eXP, supplier);
-                            for (Subscriber subscriber : modelRemote.getSubscribers()) {
-                                food.addSubscriber(subscriber);
-                                ((ProductManagementUI) subscriber).clearInputFields();
-                            }
-                            ProductServiceImpl foodService = new ProductServiceImpl(new FoodJdbcGateway());
-                            JOptionPane.showMessageDialog(infoFrame,
-                                    "Added " + foodService.insert(food) + " Food product into database.",
-                                    "Done!",
-                                    JOptionPane.INFORMATION_MESSAGE);
-                            infoFrame.dispose();
-                        }
-                    });
-                }
-            });
+            applianceButton.addActionListener(actionListener);
+            potteryButton.addActionListener(actionListener);
+            foodButton.addActionListener(actionListener);
         }
     }
 }

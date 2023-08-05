@@ -29,8 +29,8 @@ public class Appliance extends Product {
         // Còn 20 trở lên trong kho => khó bán
         if (getAmount() >= 20)
             return "Obsolete";
-        // Còn 5 trở xuống => Best-Seller
-        if (getAmount() <= 5)
+        // Còn 10 trở xuống => Best-Seller
+        if (getAmount() <= 10)
             return "Best-Seller";
         return "Average";
     }

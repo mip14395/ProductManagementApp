@@ -1,6 +1,8 @@
 package domain;
 
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -9,10 +11,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import domain.model.Product;
+import presentation.ProductManagementUI;
 
 public class EstimateCommand implements Command {
+    Product modelRemote;
 
-    public EstimateCommand() {
+    public EstimateCommand(Product modelRemote) {
+        this.modelRemote = modelRemote;
     }
 
     @Override
@@ -29,13 +34,31 @@ public class EstimateCommand implements Command {
         panel.add(applianceButton);
         panel.add(new JLabel("Food:"));
         panel.add(foodButton);
-        panel.add(new JLabel("Pottery"));
+        panel.add(new JLabel("Pottery:"));
         panel.add(potteryButton);
         frame.add(panel);
         frame.setSize(300, 150);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setResizable(false);
         frame.setVisible(true);
+        ActionListener actionListener = new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String condition = "Category= ";
+                if (e.getSource() == potteryButton)
+                    condition += "'Pottery'";
+                else if (e.getSource() == applianceButton)
+                    condition += "'Appliance'";
+                else
+                    condition += "'Food'";
+                frame.dispose();
+                ((ProductManagementUI) modelRemote.getSubscribers().get(0)).setCondition(condition);
+            }
+        };
+        potteryButton.addActionListener(actionListener);
+        applianceButton.addActionListener(actionListener);
+        foodButton.addActionListener(actionListener);
     }
 
 }

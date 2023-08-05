@@ -50,9 +50,9 @@ public class Food extends Product {
         if (getAmount() >= 15 && (System.currentTimeMillis() - getmFG().getTime()) / 9 > geteXP().getTime()
                 - System.currentTimeMillis())
             return "Obsolete";
-        // Mới 1/2 thời gian từ NSX đến HSD mà còn 15=> bán chạy
+        // Mới 1/2 thời gian từ NSX đến HSD mà chỉ còn 20=> bán chạy
         if ((geteXP().getTime() - System.currentTimeMillis() >= System.currentTimeMillis() - getmFG().getTime())
-                && getAmount() <= 15) {
+                && getAmount() <= 20) {
             return "Best-Seller";
         }
         return "Average";

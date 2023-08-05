@@ -96,6 +96,13 @@ public class EditCommand implements Command {
                                 "INVALID INPUT(s)", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
+                    if (warrantyMonths < 0 || capacity < 0) {
+                        JOptionPane.showMessageDialog(null,
+                                "Warranty months and Capacity cannot be negatives",
+                                "INVALID INPUT(s)",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
                     Appliance appliance = new Appliance(iD, name, amount, price, warrantyMonths, capacity);
                     for (Subscriber subscriber : modelRemote.getSubscribers()) {
                         appliance.addSubscriber(subscriber);
@@ -153,6 +160,12 @@ public class EditCommand implements Command {
                     }
                     try {
                         importDate = Date.valueOf(impTextField.getText());
+                        if (importDate.after(new Date(System.currentTimeMillis()))) {
+                            JOptionPane.showMessageDialog(infoPanel,
+                                    "Import date cannot be in the future!", "Invalid input",
+                                    JOptionPane.WARNING_MESSAGE);
+                            return;
+                        }
                     } catch (IllegalArgumentException ex) {
                         JOptionPane.showMessageDialog(infoPanel,
                                 "Please enter dates under the format (yyyy-MM-dd)!", "Invalid input",
@@ -216,6 +229,16 @@ public class EditCommand implements Command {
                         }
                         amount = Integer.parseInt(amountTextField.getText());
                         price = Integer.parseInt(priceTextField.getText());
+                        if (amount < 0) {
+                            JOptionPane.showMessageDialog(null, "Amount can only be negative!", "INVALID INPUT(s)",
+                                    JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                        if (price < 1) {
+                            JOptionPane.showMessageDialog(null, "Price must be greater than 0!", "INVALID INPUT(s)",
+                                    JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
                     } catch (NumberFormatException ex) {
                         JOptionPane.showMessageDialog(null, "Amount, Price and Warranty months can only be integers.",
                                 "INVALID INPUT(s)", JOptionPane.WARNING_MESSAGE);
@@ -224,6 +247,18 @@ public class EditCommand implements Command {
                     try {
                         mFG = Date.valueOf(mFGTextField.getText());
                         eXP = Date.valueOf(eXPTextField.getText());
+                        if (mFG.after(new Date(System.currentTimeMillis()))) {
+                            JOptionPane.showMessageDialog(infoPanel,
+                                    "Manufacturing date cannot be in the future!", "Invalid input",
+                                    JOptionPane.WARNING_MESSAGE);
+                            return;
+                        }
+                        if (mFG.compareTo(eXP) > 0) {
+                            JOptionPane.showMessageDialog(infoPanel,
+                                    "Manufacturing date cannot be later than Expiration date!", "Invalid input",
+                                    JOptionPane.WARNING_MESSAGE);
+                            return;
+                        }
                     } catch (IllegalArgumentException ex) {
                         JOptionPane.showMessageDialog(infoPanel,
                                 "Please enter dates under the format (yyyy-MM-dd)!", "Invalid input",

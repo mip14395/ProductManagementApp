@@ -1,25 +1,25 @@
 package presentation;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.sql.Date;
-import java.util.ArrayList;
+import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.text.ParseException;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.MaskFormatter;
 
-import domain.ProductServiceImpl;
 import domain.model.*;
 
 public class ProductManagementUI extends JFrame implements Subscriber {
-    private ProductServiceImpl productService;
     private Product modelRemote;
     private ProductManagementController controllerRemote;
     private DefaultTableModel tableModel;
     private JTable productTable;
-    private JTextField idTextField;
+    private JFormattedTextField idTextField;
     private JTextField nameTextField;
     private JTextField amountTextField;
     private JTextField priceTextField;
@@ -36,7 +36,13 @@ public class ProductManagementUI extends JFrame implements Subscriber {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new GridLayout(2, 1));
         setPreferredSize(new Dimension(850, 400));
-        tableModel = new DefaultTableModel();
+        tableModel = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // Mọi cell đều không được phép edit trực tiếp
+                return false;
+            }
+        };
         tableModel.addColumn("ID");
         tableModel.addColumn("Name");
         tableModel.addColumn("Amount");
@@ -52,8 +58,14 @@ public class ProductManagementUI extends JFrame implements Subscriber {
         productTable = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(productTable);
         add(scrollPane, BorderLayout.CENTER);
-        idTextField = new JFormattedTextField();
-        idTextField.setColumns(8);
+        // Tạo formatter để chỉ có thể nhập id với dạng String 8 chữ số
+        MaskFormatter formatter = new MaskFormatter();
+        try {
+            formatter = new MaskFormatter("########");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        idTextField = new JFormattedTextField(formatter);
         nameTextField = new JTextField();
         amountTextField = new JTextField();
         priceTextField = new JTextField();
@@ -103,28 +115,35 @@ public class ProductManagementUI extends JFrame implements Subscriber {
         expireButton.addActionListener(controllerRemote);
         currentCondition = null;
         update();
+        // Chọn textfield khác mà id chưa hợp lệ thì báo lỗi => đem con trỏ về id
+        FocusListener idCorrectFormat = new FocusListener() {
+
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (idTextField.getText().trim().isEmpty()) {
+                    idTextField.requestFocus();
+                    JOptionPane.showMessageDialog(null, "ID can only be 8 digits.", "Please re-enter the ID",
+                            JOptionPane.WARNING_MESSAGE);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+            }
+        };
+        nameTextField.addFocusListener(idCorrectFormat);
+        amountTextField.addFocusListener(idCorrectFormat);
+        priceTextField.addFocusListener(idCorrectFormat);
     }
 
-    public Product getSelectedRow() {
+    public Object[] getSelectedRow() {
         int selectedRow = productTable.getSelectedRow();
         if (selectedRow != -1) {
-            String iD = (String) productTable.getValueAt(selectedRow, 0);
-            String name = (String) productTable.getValueAt(selectedRow, 1);
-            int amount = (int) productTable.getValueAt(selectedRow, 2);
-            int price = (int) productTable.getValueAt(selectedRow, 3);
-            if (!((String) productTable.getValueAt(selectedRow, 6)).equals("")) {
-                String supplier = (String) productTable.getValueAt(selectedRow, 6);
-                if (!(productTable.getValueAt(selectedRow, 7).toString()).equals("")) {
-                    Date importDate = (Date) productTable.getValueAt(selectedRow, 7);
-                    return new Pottery(iD, name, amount, price, importDate, supplier);
-                }
-                Date mFG = (Date) productTable.getValueAt(selectedRow, 8);
-                Date eXP = (Date) productTable.getValueAt(selectedRow, 9);
-                return new Food(iD, name, amount, price, mFG, eXP, supplier);
+            Object[] objects = new Object[12];
+            for (int i = 0; i < 12; i++) {
+                objects[i] = tableModel.getValueAt(selectedRow, i);
             }
-            int warrantyMonths = (int) productTable.getValueAt(selectedRow, 10);
-            double capacity = (double) productTable.getValueAt(selectedRow, 11);
-            return new Appliance(iD, name, amount, price, warrantyMonths, capacity);
+            return objects;
         }
         return null;
     }
@@ -136,40 +155,9 @@ public class ProductManagementUI extends JFrame implements Subscriber {
         priceTextField.setText("");
     }
 
-    public Product getAllTextFields() {
-        String iD = "";
-        String name = "";
-        int amount = 0;
-        int price = 0;
-        try {
-            iD = idTextField.getText();
-            name = nameTextField.getText();
-            if (iD.isEmpty() || name.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Please enter ID and Name",
-                        "INVALID INPUT(s)",
-                        JOptionPane.ERROR_MESSAGE);
-                return modelRemote;
-            }
-            amount = Integer.parseInt(amountTextField.getText());
-            price = Integer.parseInt(priceTextField.getText());
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Amount and Price can only be integers", "INVALID INPUT(s)",
-                    JOptionPane.ERROR_MESSAGE);
-            return modelRemote;
-        }
-        return (Product) new Pottery(iD, name, amount, price, new java.sql.Date(0), "null");
-    }
-
-    public List<Product> getProducts() {
-        List<Product> products = new ArrayList<>();
-        if (currentCondition == null) {
-            productService = new ProductServiceImpl();
-            products = productService.selectAll();
-        } else {
-            productService = new ProductServiceImpl();
-            products = productService.search(currentCondition);
-        }
-        return products;
+    public JTextField[] getAllTextFields() {
+        JTextField[] textFields = { idTextField, nameTextField, amountTextField, priceTextField };
+        return textFields;
     }
 
     public void setCondition(String currentCondition) {
@@ -177,10 +165,27 @@ public class ProductManagementUI extends JFrame implements Subscriber {
         update();
     }
 
+    public String getCondition() {
+        return this.currentCondition;
+    }
+
+    public ProductManagementController getControllerRemote() {
+        return controllerRemote;
+    }
+
     @Override
     public void update() {
+        // Xóa tất cả hàng trên table
         tableModel.setRowCount(0);
-        List<Product> products = getProducts();
+        // Gán giá trị của các product trên database vào List products
+        List<Product> products = controllerRemote.getProducts();
+        // Nếu products rỗng thì báo không có product nào phù hợp với điều kiện
+        // và set điều kiện = null
+        if (products.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "There is no product with such property.", "Product(s) not found",
+                    JOptionPane.WARNING_MESSAGE);
+            setCondition(null);
+        }
         for (Product product : products) {
             if (product instanceof Appliance) {
                 Object[] rowData = { product.getID(), product.getName(), product.getAmount(), product.getPrice(),
@@ -199,9 +204,48 @@ public class ProductManagementUI extends JFrame implements Subscriber {
                 tableModel.addRow(rowData);
             }
         }
+        if (products.size() > 1) {
+            int sumAmount = 0;
+            int sumPrice = 0;
+            int sumVAT = 0;
+            // Lấy giá trị tổng của các cột amount, price và VAT
+            for (Vector<Object> row : tableModel.getDataVector()) {
+                sumAmount += (int) row.get(2);
+                sumPrice += (int) row.get(3);
+                sumVAT += (int) row.get(4);
+            }
+            // Gán giá trị vào Array Object
+            Object[] sumRow = { "TOTAL", "", sumAmount, sumPrice, sumVAT, "", "", "", "", "", "", "" };
+            // Thêm Array Object ở trên vào tableModel
+            tableModel.addRow(sumRow);
+        }
+        // Set Renderer để chỉnh màu table
+        productTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                    boolean hasFocus, int row, int column) {
+                final Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
+                        column);
+                // Nếu hàng số chẵn => màu xám
+                c.setBackground(row % 2 == 0 ? Color.CYAN : Color.WHITE);
+                c.setForeground(Color.BLACK);
+                if (isSelected)
+                    setBackground(Color.MAGENTA);
+                // Nếu là hàng cuối (TOTAL) background đỏ, foreground trắng
+                if (row == tableModel.getRowCount() - 1 && tableModel.getRowCount() > 1) {
+                    c.setBackground(Color.DARK_GRAY);
+                    c.setForeground(Color.WHITE);
+                }
+                return c;
+            }
+        });
+        // Nếu có điều kiện cho các sản phẩm đang hiện (Đang không hiện tất cả sản phẩm
+        // trong db)
         if (currentCondition != null)
+            // Thì nút search biến thành back
             searchButton.setText("Back");
         else
+            // Nếu ko có điều kiện thì nút back lại biến thành search
             searchButton.setText("Search");
     }
 
