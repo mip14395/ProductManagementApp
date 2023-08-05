@@ -40,7 +40,7 @@ public abstract class ProductJdbcGateway implements Gateway<Product> {
         int result = 0;
         try {
             Statement statement = connection.createStatement();
-            String sql = "DELETE from products " + "WHERE ID='" + t.getID() + "'";
+            String sql = "DELETE FROM products WHERE ID='" + t.getID() + "'";
             result = statement.executeUpdate(sql);
             connection.close();
         } catch (SQLException e) {
@@ -55,7 +55,7 @@ public abstract class ProductJdbcGateway implements Gateway<Product> {
         List<Product> result = new ArrayList<>();
         try {
             Statement statement = connection.createStatement();
-            String sql = "SELECT * from products WHERE " + condition;
+            String sql = "SELECT * FROM products WHERE " + condition;
             ResultSet rs = statement.executeQuery(sql);
             while (rs.next()) {
                 String id = rs.getString("ID");
@@ -106,7 +106,7 @@ public abstract class ProductJdbcGateway implements Gateway<Product> {
         List<Product> result = new ArrayList<>();
         try {
             Statement statement = connection.createStatement();
-            String sql = "SELECT * from products";
+            String sql = "SELECT * FROM products";
             ResultSet rs = statement.executeQuery(sql);
             while (rs.next()) {
                 String id = rs.getString("ID");

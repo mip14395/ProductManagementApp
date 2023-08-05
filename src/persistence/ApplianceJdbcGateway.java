@@ -56,19 +56,4 @@ public class ApplianceJdbcGateway extends ProductJdbcGateway {
         return result;
     }
 
-    @Override
-    public int delete(Product t) {
-        int result = 0;
-        try {
-            Statement statement = connection.createStatement();
-            String sql = "DELETE from products " + "WHERE ID='" + t.getID() + "'";
-            result = statement.executeUpdate(sql);
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        t.notifySubscribers();
-        return result;
-    }
-
 }

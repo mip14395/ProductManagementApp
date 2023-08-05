@@ -1,5 +1,6 @@
 package domain;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -208,6 +209,7 @@ public class EditCommand implements Command {
             infoPanel.add(mFGTextField);
             infoPanel.add(eXPLabel);
             infoPanel.add(eXPTextField);
+            eButton.setBackground(new Color(200, 250, 230));
             eButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -278,6 +280,7 @@ public class EditCommand implements Command {
                 }
             });
         }
+        cButton.setBackground(new Color(200, 250, 230));
         cButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

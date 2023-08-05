@@ -5,9 +5,9 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.text.ParseException;
 import java.util.List;
-import java.util.Vector;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
@@ -29,6 +29,7 @@ public class ProductManagementUI extends JFrame implements Subscriber {
     private JButton searchButton;
     private JButton estimateButton;
     private JButton expireButton;
+    // Điều kiện của những product được hiện lên table
     private String currentCondition;
 
     public ProductManagementUI() {
@@ -76,6 +77,21 @@ public class ProductManagementUI extends JFrame implements Subscriber {
         searchButton = new JButton("Search");
         estimateButton = new JButton("Show estimates");
         expireButton = new JButton("Show products a week from expiration dates");
+        UIManager.put("Button.background", new Color(210, 250, 230));
+        addButton.setBackground(new Color(200, 250, 230));
+        deleteButton.setBackground(new Color(200, 250, 230));
+        editButton.setBackground(new Color(200, 250, 230));
+        searchButton.setBackground(new Color(200, 250, 230));
+        estimateButton.setBackground(new Color(200, 250, 230));
+        expireButton.setBackground(new Color(200, 250, 230));
+        scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                this.thumbDarkShadowColor = Color.black;
+                this.trackColor = Color.white;
+                this.thumbColor = new Color(210, 250, 230);
+            }
+        });
         panel.add(new JLabel("- ID:"));
         panel.add(idTextField);
         panel.add(new JLabel("- Name:"));
@@ -209,32 +225,28 @@ public class ProductManagementUI extends JFrame implements Subscriber {
             int sumPrice = 0;
             int sumVAT = 0;
             // Lấy giá trị tổng của các cột amount, price và VAT
-            for (Vector<Object> row : tableModel.getDataVector()) {
-                sumAmount += (int) row.get(2);
-                sumPrice += (int) row.get(3);
-                sumVAT += (int) row.get(4);
+            for (Product product : products) {
+                sumAmount += (int) product.getAmount();
+                sumPrice += (int) product.getPrice();
+                sumVAT += (int) product.calVAT();
             }
             // Gán giá trị vào Array Object
             Object[] sumRow = { "TOTAL", "", sumAmount, sumPrice, sumVAT, "", "", "", "", "", "", "" };
             // Thêm Array Object ở trên vào tableModel
             tableModel.addRow(sumRow);
         }
-        // Set Renderer để chỉnh màu table
         productTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
                     boolean hasFocus, int row, int column) {
                 final Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
                         column);
-                // Nếu hàng số chẵn => màu xám
-                c.setBackground(row % 2 == 0 ? Color.CYAN : Color.WHITE);
-                c.setForeground(Color.BLACK);
+                c.setBackground(row % 2 == 0 ? new Color(200, 250, 230) : new Color(250, 250, 250));
+                c.setForeground(new Color(0, 0, 0));
                 if (isSelected)
-                    setBackground(Color.MAGENTA);
-                // Nếu là hàng cuối (TOTAL) background đỏ, foreground trắng
+                    setBackground(new Color(185, 215, 255));
                 if (row == tableModel.getRowCount() - 1 && tableModel.getRowCount() > 1) {
-                    c.setBackground(Color.DARK_GRAY);
-                    c.setForeground(Color.WHITE);
+                    c.setBackground(new Color(185, 185, 255));
                 }
                 return c;
             }

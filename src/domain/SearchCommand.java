@@ -1,5 +1,6 @@
 package domain;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -98,6 +99,9 @@ public class SearchCommand implements Command {
                     JButton bestSeller = new JButton("Best-Seller");
                     JButton average = new JButton("Average");
                     JButton obsolete = new JButton("Obsolete");
+                    bestSeller.setBackground(new Color(200, 250, 230));
+                    average.setBackground(new Color(200, 250, 230));
+                    obsolete.setBackground(new Color(200, 250, 230));
                     JPanel gradePanel = new JPanel(new GridLayout(3, 1));
                     gradePanel.add(bestSeller);
                     gradePanel.add(average);
@@ -160,6 +164,7 @@ public class SearchCommand implements Command {
                     rangePanel.add(maxTextField);
                     rangePanel.add(cancelButton);
                     rangePanel.add(searchButton);
+                    cancelButton.setBackground(new Color(200, 250, 230));
                     cancelButton.addActionListener(new ActionListener() {
 
                         @Override
@@ -168,22 +173,24 @@ public class SearchCommand implements Command {
                         }
 
                     });
+                    searchButton.setBackground(new Color(200, 250, 230));
                     searchButton.addActionListener(new ActionListener() {
 
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            if (Integer.parseInt(minTextField.getText()) > Integer.parseInt(maxTextField.getText())) {
-                                JOptionPane.showMessageDialog(null,
-                                        "Minimum " + value + " cannot be greater than Maximum " + value + ".",
-                                        "INVALID INPUT(s)", JOptionPane.WARNING_MESSAGE);
-                                return;
-                            }
+
                             try {
                                 condition = value + ">= " + Integer.parseInt(minTextField.getText()) + " AND " + value
                                         + "<= "
                                         + Integer.parseInt(maxTextField.getText());
                             } catch (NumberFormatException ex) {
                                 JOptionPane.showMessageDialog(null, value + " can only be integer. ",
+                                        "INVALID INPUT(s)", JOptionPane.WARNING_MESSAGE);
+                                return;
+                            }
+                            if (Integer.parseInt(minTextField.getText()) > Integer.parseInt(maxTextField.getText())) {
+                                JOptionPane.showMessageDialog(null,
+                                        "Minimum " + value + " cannot be greater than Maximum " + value + ".",
                                         "INVALID INPUT(s)", JOptionPane.WARNING_MESSAGE);
                                 return;
                             }
@@ -196,6 +203,12 @@ public class SearchCommand implements Command {
             }
 
         };
+        idButton.setBackground(new Color(200, 250, 230));
+        nameButton.setBackground(new Color(200, 250, 230));
+        amountButton.setBackground(new Color(200, 250, 230));
+        priceButton.setBackground(new Color(200, 250, 230));
+        saleGradeButton.setBackground(new Color(200, 250, 230));
+        supplierButton.setBackground(new Color(200, 250, 230));
         idButton.addActionListener(actionListener);
         nameButton.addActionListener(actionListener);
         amountButton.addActionListener(actionListener);

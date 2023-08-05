@@ -50,8 +50,8 @@ public class ProductManagementController implements ActionListener {
                 try {
                     iD = textFields[0].getText();
                     name = textFields[1].getText();
-                    amount = Integer.parseInt(textFields[2].getText());
-                    price = Integer.parseInt(textFields[3].getText());
+                    amount = Integer.parseInt(textFields[2].getText().replaceAll("\\s", "").replaceAll(".", ""));
+                    price = Integer.parseInt(textFields[3].getText().replaceAll("\\s", "").replaceAll(".", ""));
                     // Amount ko được là số âm
                     if (amount < 0) {
                         JOptionPane.showMessageDialog(null, "Amount can only be negative!", "INVALID INPUT(s)",
