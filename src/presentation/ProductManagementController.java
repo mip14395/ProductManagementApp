@@ -43,15 +43,15 @@ public class ProductManagementController implements ActionListener {
                         return;
                     }
                 }
-                String iD = "";
-                String name = "";
+                String iD = textFields[0].getText();
+                // Xóa dấu cách thừa
+                String name = textFields[1].getText().trim();
                 int amount = 0;
                 int price = 0;
                 try {
-                    iD = textFields[0].getText();
-                    name = textFields[1].getText();
-                    amount = Integer.parseInt(textFields[2].getText().replaceAll("\\s", "").replaceAll(".", ""));
-                    price = Integer.parseInt(textFields[3].getText().replaceAll("\\s", "").replaceAll(".", ""));
+                    // Gỡ hết dấu cách và dấu chấm
+                    amount = Integer.parseInt(textFields[2].getText().replaceAll("\\s", "").replaceAll("\\.", ""));
+                    price = Integer.parseInt(textFields[3].getText().replaceAll("\\s", "").replaceAll("\\.", ""));
                     // Amount ko được là số âm
                     if (amount < 0) {
                         JOptionPane.showMessageDialog(null, "Amount can only be negative!", "INVALID INPUT(s)",
@@ -69,6 +69,7 @@ public class ProductManagementController implements ActionListener {
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
+                // Kiểm tra trùng ID
                 for (Product product : getProducts()) {
                     try {
                         if (product.getID().equals(iD)) {

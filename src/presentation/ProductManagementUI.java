@@ -86,6 +86,20 @@ public class ProductManagementUI extends JFrame implements Subscriber {
         expireButton.setBackground(new Color(200, 250, 230));
         scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
             @Override
+            protected JButton createDecreaseButton(int orientation) {
+                JButton button = super.createDecreaseButton(orientation);
+                button.setBackground(new Color(210, 250, 230));
+                return button;
+            }
+
+            @Override
+            protected JButton createIncreaseButton(int orientation) {
+                JButton button = super.createIncreaseButton(orientation);
+                button.setBackground(new Color(210, 250, 230));
+                return button;
+            }
+
+            @Override
             protected void configureScrollBarColors() {
                 this.thumbDarkShadowColor = Color.black;
                 this.trackColor = Color.white;
