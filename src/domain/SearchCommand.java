@@ -1,8 +1,6 @@
 package domain;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -47,6 +45,7 @@ public class SearchCommand implements Command {
         frame.setSize(new Dimension(400, 180));
         frame.setResizable(false);
         frame.setVisible(true);
+        frame.setLocation(483, 294);
         ActionListener actionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -109,6 +108,7 @@ public class SearchCommand implements Command {
                     gradeFrame.add(gradePanel);
                     gradeFrame.setSize(new Dimension(200, 150));
                     gradeFrame.setVisible(true);
+                    gradeFrame.setLocation(583, 309);
                     ActionListener actionListener = new ActionListener() {
 
                         @Override
@@ -199,6 +199,7 @@ public class SearchCommand implements Command {
                         }
                     });
                     rangeFrame.setVisible(true);
+                    rangeFrame.setLocation(433, 309);
                 }
             }
 

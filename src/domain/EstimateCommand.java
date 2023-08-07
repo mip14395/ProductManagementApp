@@ -41,6 +41,7 @@ public class EstimateCommand implements Command {
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setResizable(false);
         frame.setVisible(true);
+        frame.setLocation(533, 309);
         ActionListener actionListener = new ActionListener() {
 
             @Override

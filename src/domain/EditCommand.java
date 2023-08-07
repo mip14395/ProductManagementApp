@@ -287,6 +287,7 @@ public class EditCommand implements Command {
                 editFrame.dispose();
             }
         });
+        editFrame.setLocation(384, 230);
         infoPanel.add(cButton);
         infoPanel.add(eButton);
     }

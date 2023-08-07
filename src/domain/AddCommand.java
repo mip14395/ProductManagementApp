@@ -1,8 +1,6 @@
 package domain;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;
@@ -64,6 +62,7 @@ public class AddCommand implements Command {
         frame.setResizable(false);
         frame.setSize(new Dimension(500, 70));
         frame.setVisible(true);
+        frame.setLocation(433, 349);
 
         JFrame infoFrame = new JFrame("Enter informations:");
         JLabel infoHeader = new JLabel("Product's informations: ");
@@ -299,6 +298,7 @@ public class AddCommand implements Command {
                 infoFrame.add(infoPanel);
                 infoFrame.setSize(new Dimension(600, 300));
                 infoFrame.setVisible(true);
+                infoFrame.setLocation(383, 234);
             }
         };
         applianceButton.addActionListener(actionListener);

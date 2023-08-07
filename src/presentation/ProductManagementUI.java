@@ -35,7 +35,7 @@ public class ProductManagementUI extends JFrame implements Subscriber {
     public ProductManagementUI() {
         setTitle("Product Management");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new GridLayout(2, 1));
+        setLayout(new BorderLayout());
         setPreferredSize(new Dimension(850, 400));
         tableModel = new DefaultTableModel() {
             @Override
@@ -57,6 +57,7 @@ public class ProductManagementUI extends JFrame implements Subscriber {
         tableModel.addColumn("Warranty months");
         tableModel.addColumn("Capacity");
         productTable = new JTable(tableModel);
+        productTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane scrollPane = new JScrollPane(productTable);
         add(scrollPane, BorderLayout.CENTER);
         // Tạo formatter để chỉ có thể nhập id với dạng String 8 chữ số
@@ -120,9 +121,10 @@ public class ProductManagementUI extends JFrame implements Subscriber {
         panel.add(searchButton);
         panel.add(estimateButton);
         panel.add(expireButton);
-        add(panel);
+        add(panel, BorderLayout.SOUTH);
         pack();
         setVisible(true);
+        setLocation(258, 184);
 
         modelRemote = new Product() {
             @Override
